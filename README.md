@@ -2,10 +2,6 @@
 
 **A modern web platform for remote cargo shipment management and tracking**  
 Developed as part of Bachelor of Science in Business Information System  
-**Student:** Petrus Nghilukilwa (220005672)  
-**Institution:** International University of Management, Namibia  
-**Date:** December 23, 2025  
-**Supervisor:** Mrs. G Rukanda
 
 ## Project Purpose
 
