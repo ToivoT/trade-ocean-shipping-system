@@ -1,7 +1,7 @@
 # Trade Ocean Namibia Shipping Web-Based System
 
 **A modern web platform for remote cargo shipment management and tracking**  
-Developed as part of Bachelor of Science in Business Information System  
+  
 
 ## Project Purpose
 
