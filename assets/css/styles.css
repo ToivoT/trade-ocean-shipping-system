@@ -1,0 +1,397 @@
+/* Trade Ocean Namibia Shipping System - Custom Styles */
+
+:root {
+    --primary-color: #0066cc;
+    --secondary-color: #003d7a;
+    --accent-color: #00a8e8;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-bg: #f8f9fa;
+    --dark-text: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--dark-text);
+    background-color: #fff;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--secondary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff !important;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--accent-color) !important;
+}
+
+/* Hero Section */
+.hero {
+    background-image: url('../../uploads/p1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 0, 0, 0.6);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.hero .btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-ocean {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.btn-ocean:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+/* Auth Pages */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #e3f2fd 100%);
+}
+
+.auth-card {
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h2 {
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+/* Dashboard */
+.dashboard-header {
+    background-color: var(--light-bg);
+    padding: 30px 0;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px;
+}
+
+.stat-card .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-card .stat-label {
+    color: #6c757d;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+/* Tables */
+.table-responsive {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* Tracking Timeline */
+.tracking-timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 50px;
+    padding-bottom: 30px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: -30px;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 12px;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.timeline-item.active .timeline-marker {
+    background-color: var(--success-color);
+    box-shadow: 0 0 0 2px var(--success-color);
+}
+
+.timeline-content {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timeline-date {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* Status Badges */
+.badge {
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 5px;
+    border: none;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 30px 0;
+    margin-top: 50px;
+}
+
+.footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Documents */
+.document-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.document-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-right: 15px;
+}
+
+/* Loading Spinner */
+.spinner-container {
+    text-align: center;
+    padding: 50px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .stat-card .stat-value {
+        font-size: 2rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+/* Verification Notice */
+.verification-notice {
+    background-color: #fff3cd;
+    border-left: 4px solid var(--warning-color);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+/* Admin Section */
+.admin-sidebar {
+    background-color: var(--light-bg);
+    min-height: calc(100vh - 56px);
+    padding: 20px;
+}
+
+.admin-nav {
+    list-style: none;
+    padding: 0;
+}
+
+.admin-nav li {
+    margin-bottom: 10px;
+}
+
+.admin-nav a {
+    display: block;
+    padding: 10px 15px;
+    color: var(--dark-text);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Features Section */
+.features {
+    padding: 60px 0;
+}
+
+.feature-box {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.feature-box h3 {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+/* Utility Classes */
+.text-ocean {
+    color: var(--primary-color);
+}
+
+.bg-ocean {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.border-ocean {
+    border-color: var(--primary-color) !important;
+}

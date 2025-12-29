@@ -1,0 +1,34 @@
+# Environment and configuration
+includes/config.php
+
+# Uploads directory (user-uploaded files)
+uploads/*
+!uploads/.gitkeep
+
+# XAMPP/Apache logs
+*.log
+
+# PHP
+*.cache
+vendor/
+
+# IDE and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Session files
+sessions/
+
+# Backup files
+*.bak
+*.backup
+*.old
