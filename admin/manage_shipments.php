@@ -41,9 +41,11 @@ if (isset($_GET['id'])) {
 $filter = $_GET['filter'] ?? 'all';
 $search = sanitize($_GET['search'] ?? '');
 
-$query = "SELECT s.*, u.full_name as customer_name, u.email as customer_email
+$query = "SELECT s.*, u.full_name as customer_name, u.email as customer_email,
+          p.id as payment_id, p.invoice_number, p.amount, p.currency, p.status as payment_status
           FROM shipments s
           JOIN users u ON s.user_id = u.id
+          LEFT JOIN payments p ON s.id = p.shipment_id
           WHERE 1=1";
 
 if ($filter !== 'all') {
@@ -244,9 +246,9 @@ $statuses = [
                                 <tr>
                                     <th>Tracking Number</th>
                                     <th>Customer</th>
-                                    <th>Origin í Destination</th>
+                                    <th>Origin ÔøΩ Destination</th>
                                     <th>Status</th>
-                                    <th>Current Location</th>
+                                    <th>Payment</th>
                                     <th>Created</th>
                                     <th>Actions</th>
                                 </tr>
@@ -257,7 +259,7 @@ $statuses = [
                                         <td><strong><?= htmlspecialchars($shipment['tracking_number']) ?></strong></td>
                                         <td><?= htmlspecialchars($shipment['customer_name']) ?></td>
                                         <td>
-                                            <?= htmlspecialchars($shipment['origin_port'] ?? 'N/A') ?> í
+                                            <?= htmlspecialchars($shipment['origin_port'] ?? 'N/A') ?> ÔøΩ
                                             <?= htmlspecialchars($shipment['destination_port']) ?>
                                         </td>
                                         <td>
@@ -265,11 +267,36 @@ $statuses = [
                                                 <?= htmlspecialchars($shipment['status']) ?>
                                             </span>
                                         </td>
-                                        <td><?= htmlspecialchars($shipment['current_location'] ?? 'N/A') ?></td>
+                                        <td>
+                                            <?php if ($shipment['payment_id']): ?>
+                                                <?php if ($shipment['payment_status'] === 'Paid'): ?>
+                                                    <span class="badge bg-success">Paid</span><br>
+                                                    <small class="text-muted"><?= number_format($shipment['amount'], 0) ?> <?= $shipment['currency'] ?></small>
+                                                <?php elseif ($shipment['payment_status'] === 'Pending'): ?>
+                                                    <span class="badge bg-warning">Pending</span><br>
+                                                    <small class="text-muted"><?= number_format($shipment['amount'], 0) ?> <?= $shipment['currency'] ?></small>
+                                                <?php endif; ?>
+                                            <?php elseif ($shipment['status'] === 'Documents Submitted'): ?>
+                                                <span class="text-muted">No invoice</span>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?= date('M d, Y', strtotime($shipment['created_at'])) ?></td>
                                         <td>
+                                            <?php if ($shipment['payment_id'] && $shipment['payment_status'] === 'Pending'): ?>
+                                                <a href="mark_payment_paid.php?payment_id=<?= $shipment['payment_id'] ?>"
+                                                   class="btn btn-sm btn-success mb-1" title="Confirm Payment">
+                                                    Confirm Pay
+                                                </a>
+                                            <?php elseif ($shipment['status'] === 'Documents Submitted' && !$shipment['payment_id']): ?>
+                                                <a href="generate_invoice.php?shipment_id=<?= $shipment['id'] ?>"
+                                                   class="btn btn-sm btn-info mb-1" title="Generate Invoice">
+                                                    Gen Invoice
+                                                </a>
+                                            <?php endif; ?>
                                             <a href="manage_shipments.php?id=<?= $shipment['id'] ?>"
-                                               class="btn btn-sm btn-primary">Update</a>
+                                               class="btn btn-sm btn-primary mb-1">Update</a>
                                             <a href="../shipment_details.php?id=<?= $shipment['id'] ?>"
                                                class="btn btn-sm btn-outline-primary">View</a>
                                         </td>
@@ -287,7 +314,7 @@ $statuses = [
         </div>
 
         <div class="mt-4">
-            <a href="index.php" class="btn btn-outline-secondary">ê Back to Dashboard</a>
+            <a href="index.php" class="btn btn-outline-secondary">ÔøΩ Back to Dashboard</a>
         </div>
     </div>
 

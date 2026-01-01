@@ -20,6 +20,10 @@ vendor/
 .DS_Store
 Thumbs.db
 
+# Claude Code and testing artifacts
+.claude/
+.playwright-mcp/
+
 # Temporary files
 *.tmp
 *.temp

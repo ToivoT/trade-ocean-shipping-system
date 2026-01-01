@@ -228,4 +228,54 @@ function getStatusBadgeClass($status) {
 
     return 'badge bg-' . ($classes[$status] ?? 'secondary');
 }
+
+// Generate unique invoice number (INV-YYYY-XXXXXX)
+function generateInvoiceNumber($conn) {
+    $year = date('Y');
+    $prefix = "INV-$year-";
+
+    // Get the last invoice number for this year
+    $query = "SELECT invoice_number FROM payments
+              WHERE invoice_number LIKE ?
+              ORDER BY id DESC LIMIT 1";
+    $stmt = $conn->prepare($query);
+    $search = $prefix . '%';
+    $stmt->bind_param('s', $search);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $lastNumber = intval(substr($row['invoice_number'], -6));
+        $newNumber = $lastNumber + 1;
+    } else {
+        $newNumber = 1;
+    }
+
+    return $prefix . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
+}
+
+// Get payment by ID
+function getPaymentById($conn, $paymentId) {
+    $stmt = $conn->prepare("SELECT p.*, s.tracking_number, s.user_id,
+                           u.full_name as customer_name, u.email as customer_email,
+                           u.phone as customer_phone, u.address as customer_address
+                           FROM payments p
+                           JOIN shipments s ON p.shipment_id = s.id
+                           JOIN users u ON s.user_id = u.id
+                           WHERE p.id = ?");
+    $stmt->bind_param('i', $paymentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
+
+// Get payment by shipment ID
+function getPaymentByShipment($conn, $shipmentId) {
+    $stmt = $conn->prepare("SELECT * FROM payments WHERE shipment_id = ?");
+    $stmt->bind_param('i', $shipmentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
 ?>

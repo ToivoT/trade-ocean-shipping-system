@@ -35,26 +35,50 @@ $packages = getShipmentPackages($conn, $shipmentId);
 // Get documents
 $documents = getShipmentDocuments($conn, $shipmentId);
 
-// Handle document upload
-$uploadError = '';
+// Get payment/invoice for this shipment
+$payment = getPaymentByShipment($conn, $shipmentId);
+
+// Initialize success/error messages
 $uploadSuccess = '';
+$uploadError = '';
+
+// Handle success/error messages from redirects
+if (isset($_GET['success'])) {
+    if ($_GET['success'] === 'proof_uploaded') {
+        $uploadSuccess = 'Proof of payment uploaded successfully! Our team will review it shortly.';
+    }
+}
+
+if (isset($_GET['error']) && !empty($_GET['error'])) {
+    $uploadError = htmlspecialchars($_GET['error']);
+}
+
+// Handle document upload
+$docUploadError = '';
+$docUploadSuccess = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document'])) {
     $documentType = sanitize($_POST['document_type'] ?? '');
 
     if (empty($documentType)) {
-        $uploadError = "Please select a document type";
+        $docUploadError = "Please select a document type";
     } elseif (!isset($_FILES['document']) || $_FILES['document']['error'] !== UPLOAD_ERR_OK) {
-        $uploadError = "Please select a file to upload";
+        $docUploadError = "Please select a file to upload";
     } else {
         $result = uploadDocument($conn, $shipmentId, $_FILES['document'], $documentType, $_SESSION['user_id']);
 
         if ($result['success']) {
-            $uploadSuccess = "Document uploaded successfully!";
+            $docUploadSuccess = "Document uploaded successfully!";
             // Refresh documents
             $documents = getShipmentDocuments($conn, $shipmentId);
+
+            // Auto-update status to "Documents Submitted" if currently "Documents Pending"
+            if ($shipment['status'] === 'Documents Pending') {
+                updateShipmentStatus($conn, $shipmentId, 'Documents Submitted', 'Documents uploaded by customer', $_SESSION['user_id']);
+                $shipment['status'] = 'Documents Submitted'; // Update local variable
+            }
         } else {
-            $uploadError = implode(', ', $result['errors']);
+            $docUploadError = implode(', ', $result['errors']);
         }
     }
 }
@@ -98,6 +122,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document'])) {
     </nav>
 
     <div class="container my-5">
+        <!-- Success/Error Messages -->
+        <?php if ($uploadSuccess): ?>
+            <div class="alert alert-success alert-dismissible fade show">
+                <?= $uploadSuccess ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($uploadError): ?>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <?= $uploadError ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-md-12">
@@ -273,11 +312,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document'])) {
                         <h5 class="mb-0">Documents</h5>
                     </div>
                     <div class="card-body">
-                        <?php if ($uploadSuccess): ?>
-                            <div class="alert alert-success"><?= htmlspecialchars($uploadSuccess) ?></div>
+                        <?php if ($docUploadSuccess): ?>
+                            <div class="alert alert-success"><?= htmlspecialchars($docUploadSuccess) ?></div>
                         <?php endif; ?>
-                        <?php if ($uploadError): ?>
-                            <div class="alert alert-danger"><?= htmlspecialchars($uploadError) ?></div>
+                        <?php if ($docUploadError): ?>
+                            <div class="alert alert-danger"><?= htmlspecialchars($docUploadError) ?></div>
                         <?php endif; ?>
 
                         <!-- Upload Form -->
@@ -324,6 +363,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document'])) {
                     </div>
                 </div>
 
+                <!-- Invoice & Payment -->
+                <?php if ($payment): ?>
+                    <div class="card mb-4">
+                        <div class="card-header bg-<?= $payment['status'] === 'Paid' ? 'success' : 'warning' ?> text-white">
+                            <h5 class="mb-0">Invoice & Payment</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                <strong>Invoice Number:</strong><br>
+                                <?= htmlspecialchars($payment['invoice_number']) ?>
+                            </p>
+                            <p class="mb-2">
+                                <strong>Amount:</strong><br>
+                                <span class="fs-5 fw-bold text-primary">
+                                    <?= number_format($payment['amount'], 2) ?> <?= htmlspecialchars($payment['currency']) ?>
+                                </span>
+                            </p>
+                            <p class="mb-3">
+                                <strong>Status:</strong><br>
+                                <?php if ($payment['status'] === 'Paid'): ?>
+                                    <span class="badge bg-success">PAID</span>
+                                    <br><small class="text-muted">Paid on <?= date('d M Y', strtotime($payment['paid_at'])) ?></small>
+                                <?php elseif ($payment['status'] === 'Pending'): ?>
+                                    <span class="badge bg-warning">PENDING PAYMENT</span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary"><?= htmlspecialchars($payment['status']) ?></span>
+                                <?php endif; ?>
+                            </p>
+
+                            <a href="view_invoice.php?id=<?= $payment['id'] ?>" class="btn btn-primary btn-sm w-100 mb-2">
+                                View Invoice
+                            </a>
+
+                            <?php if (isAdmin() && $payment['status'] === 'Pending'): ?>
+                                <a href="admin/mark_payment_paid.php?payment_id=<?= $payment['id'] ?>" class="btn btn-success btn-sm w-100">
+                                    Mark as Paid
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php elseif ($shipment['status'] === 'Documents Submitted' && isAdmin()): ?>
+                    <div class="card mb-4 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Generate Invoice</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-3">Documents have been submitted. Generate an invoice for this shipment.</p>
+                            <a href="admin/generate_invoice.php?shipment_id=<?= $shipment['id'] ?>" class="btn btn-primary w-100">
+                                Generate Invoice
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Customer Info (Admin only) -->
                 <?php if (isAdmin()): ?>
                     <div class="card">
@@ -346,7 +439,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document'])) {
 
         <div class="mt-4">
             <a href="<?= isAdmin() ? 'admin/index.php' : 'dashboard.php' ?>" class="btn btn-outline-secondary">
-                ê Back to Dashboard
+                ÔøΩ Back to Dashboard
             </a>
         </div>
     </div>
